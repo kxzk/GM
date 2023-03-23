@@ -50,13 +50,10 @@ GH_EVENTS = [
 
 
 def github_user(
-    token: str, user: Optional[str] = None
+    token: str, user: str
 ) -> NamedUser.NamedUser | AuthenticatedUser.AuthenticatedUser:
     g = Github(token)
-    if user:
-        u = g.get_user(user)
-    else:
-        u = g.get_user()
+    u = g.get_user(user)
     return u
 
 
@@ -78,10 +75,13 @@ def github_event(event: Event.Event) -> Optional[Dict[str, str]]:
         E["pull_request_title"] = event.payload["pull_request"]["title"]
         E["review"] = event.payload["review"]["state"]
         return E
-    elif event.type == "PushEvent":
+    elif event.type == "PushEvent" and len(event.payload["commits"]) > 0:
         E = event_dict(event)
         E["branch"] = event.payload["ref"]
-        E["commit"] = event.payload["commits"][0]["message"]
+        E["commit"] = []
+        commits = event.payload["commits"]
+        for i in range(len(commits)):
+            E["commit"].append(commits[i]["message"])
         return E
     elif event.type == "PullRequestReviewCommentEvent":
         E = event_dict(event)

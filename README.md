@@ -36,17 +36,20 @@ That's it for me, thank you!
 <br>
 <br>
 
-* install
+* `openai_key`
 
 ```bash
-pip3 install -r requirements.txt
-
-# set OPENAI API KEY
-export OPENAI_KEY=xxxxxxx
+export OPENAI_KEY=xxx
 ```
 
-* invoke
+* `makefile`
 
 ```bash
-python3 gm.py -u <gh_username> -t <gh_access_token> -o <organization>
+Usage: 
+
+- make setup      install requirements
+- make test       make test token=xxx (skip slow tests)
+- make test-all   make test-all token=xxx (run slow tests)
+- make lint       run black and ruff on all python files
+- make run        make run username=xxx token=xxx org=xxx
 ```
