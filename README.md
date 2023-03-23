@@ -40,6 +40,9 @@ That's it for me, thank you!
 
 ```bash
 pip3 install -r requirements.txt
+
+# set OPENAI API KEY
+export OPENAI_KEY=xxxxxxx
 ```
 
 * invoke
