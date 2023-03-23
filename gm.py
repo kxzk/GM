@@ -78,10 +78,10 @@ def github_event(event: Event.Event) -> Optional[Dict[str, str]]:
     elif event.type == "PushEvent" and len(event.payload["commits"]) > 0:
         E = event_dict(event)
         E["branch"] = event.payload["ref"]
-        E["commit"] = []
+        E["commits"] = []
         commits = event.payload["commits"]
         for i in range(len(commits)):
-            E["commit"].append(commits[i]["message"])
+            E["commits"].append(commits[i]["message"])
         return E
     elif event.type == "PullRequestReviewCommentEvent":
         E = event_dict(event)
