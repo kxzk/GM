@@ -12,6 +12,7 @@ openai.api_key = environ["OPENAI_KEY"]
 
 
 def hey_gpt(events: list[dict]) -> str:
+    # @TODO: update to stream response back
     prompt = f"""
     Hi! Can you write an engineering stand up for me? 
     I'd like it to be a list and include details.
@@ -21,7 +22,7 @@ def hey_gpt(events: list[dict]) -> str:
     """
 
     completion = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo", messages=[{"role": "user", "content": prompt}]
+        model="gpt-4", messages=[{"role": "user", "content": prompt}]
     )
 
     output = completion.choices[0].message["content"].strip()
