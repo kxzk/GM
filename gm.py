@@ -29,6 +29,7 @@ def hey_gpt(events: list[dict]) -> str:
     return output
 
 
+# only care about code related events
 GH_EVENTS = [
     #  "CommitCommentEvent",
     #  "CreateEvent",
@@ -67,6 +68,7 @@ def event_dict(event: Event.Event) -> Dict[str, str]:
 
 
 def github_event(event: Event.Event) -> Optional[Dict[str, str]]:
+    # @TODO: probably a better way to do this
     if (
         event.type == "PullRequestReviewEvent"
         and event.payload["review"]["state"] == "approved"
@@ -125,6 +127,8 @@ if __name__ == "__main__":
     gh_event_log = []
 
     for e in u.get_events():
+        # make this more configurable
+        # use for organization or personal events
         if (
             e.org is not None
             # belongs to the `--org`
