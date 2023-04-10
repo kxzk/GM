@@ -8,7 +8,9 @@ from typing import Dict, Optional
 import openai
 from github import AuthenticatedUser, Event, Github, NamedUser
 
-openai.api_key = environ["OPENAI_KEY"]
+openai.api_key = environ.get("OPENAI_KEY", environ.get("OPENAI_API_KEY"))
+
+OPENAI_MODEL = environ.get("OPENAI_MODEL", "gpt-4")
 
 
 def hey_gpt(events: list[dict]) -> str:
@@ -22,7 +24,7 @@ def hey_gpt(events: list[dict]) -> str:
     """
 
     completion = openai.ChatCompletion.create(
-        model="gpt-4", messages=[{"role": "user", "content": prompt}]
+        model=OPENAI_MODEL, messages=[{"role": "user", "content": prompt}]
     )
 
     output = completion.choices[0].message["content"].strip()
@@ -84,7 +86,7 @@ def github_event(event: Event.Event) -> Optional[Dict[str, str]]:
         E["commits"] = []
         commits = event.payload["commits"]
         for i in range(len(commits)):
-            E["commits"].append(commits[i]["message"])
+            E["commits"].append(strip_commit_message(commits[i]["message"]))
         return E
     elif event.type == "PullRequestReviewCommentEvent":
         E = event_dict(event)
@@ -109,6 +111,11 @@ def github_event(event: Event.Event) -> Optional[Dict[str, str]]:
     else:
         return None
 
+def strip_commit_message(message: str) -> str:
+    # remove lines starting with 'Signed-off-by:'
+    lines = message.splitlines()
+    lines = [line for line in lines if not line.startswith("Signed-off-by:")]
+    return "\n".join(lines)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -117,10 +124,16 @@ if __name__ == "__main__":
         "-o", "--org", type=str, help="GitHub organization", required=True
     )
     parser.add_argument(
-        "-t", "--token", type=str, help="GitHub access token", required=True
+        "-t", "--token", type=str, help="GitHub access token", required=False
     )
     parser.add_argument("-d", "--days", type=int, help="Days back", default=1)
     args = parser.parse_args()
+
+    if not args.token:
+        args.token = environ.get("GITHUB_TOKEN")
+
+    if not args.token:
+        raise Exception("No GitHub token provided, use --token <token> or GITHUB_TOKEN env var")
 
     u = github_user(args.token, args.user)
 
