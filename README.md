@@ -36,10 +36,10 @@ That's it for me, thank you!
 <br>
 <br>
 
-* `openai_key`
+* `openai_api_key`
 
 ```bash
-export OPENAI_KEY=xxx
+export OPENAI_API_KEY=xxx
 ```
 
 * `makefile`
