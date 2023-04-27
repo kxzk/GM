@@ -8,7 +8,7 @@ from typing import Dict, Optional
 import openai
 from github import AuthenticatedUser, Event, Github, NamedUser
 
-openai.api_key = environ.get("OPENAI_KEY", environ.get("OPENAI_API_KEY"))
+openai.api_key = environ.get("OPENAI_API_KEY")
 
 OPENAI_MODEL = environ.get("OPENAI_MODEL", "gpt-4")
 
@@ -111,11 +111,13 @@ def github_event(event: Event.Event) -> Optional[Dict[str, str]]:
     else:
         return None
 
+
 def strip_commit_message(message: str) -> str:
     # remove lines starting with 'Signed-off-by:'
     lines = message.splitlines()
     lines = [line for line in lines if not line.startswith("Signed-off-by:")]
     return "\n".join(lines)
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -133,7 +135,9 @@ if __name__ == "__main__":
         args.token = environ.get("GITHUB_TOKEN")
 
     if not args.token:
-        raise Exception("No GitHub token provided, use --token <token> or GITHUB_TOKEN env var")
+        raise Exception(
+            "No GitHub token provided, use --token <token> or GITHUB_TOKEN env var"
+        )
 
     u = github_user(args.token, args.user)
 
